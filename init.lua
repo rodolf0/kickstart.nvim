@@ -870,6 +870,24 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
+  {
+    'stevearc/oil.nvim',
+    opts = {},
+    -- Optional dependencies
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('oil').setup {
+        keymaps = {
+          ['C-H'] = false,
+        },
+        view_options = {
+          show_hidden = true,
+        },
+      }
+      -- Open parent dir in floating window
+      vim.keymap.set('n', '-', require('oil').toggle_float)
+    end,
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
