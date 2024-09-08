@@ -156,6 +156,7 @@ vim.opt.rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
+
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
@@ -546,12 +547,6 @@ require('lazy').setup({
         gopls = {},
         pylsp = {},
         rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
         tsserver = {},
         --
 
@@ -590,6 +585,10 @@ require('lazy').setup({
       require('mason-lspconfig').setup {
         handlers = {
           function(server_name)
+            -- TODO: https://github.com/neovim/nvim-lspconfig/pull/3232
+            if server_name == 'tsserver' then
+              server_name = 'ts_ls'
+            end
             local server = servers[server_name] or {}
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
@@ -756,6 +755,7 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'codeium' },
         },
       }
     end,
@@ -845,23 +845,13 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
   {
-    'Exafunction/codeium.vim',
-    event = 'BufEnter',
+    'Exafunction/codeium.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'hrsh7th/nvim-cmp',
+    },
     config = function()
-      vim.g.codeium_disable_bindings = 1
-      -- Change '<C-g>' here to any keycode you like.
-      vim.keymap.set('i', '<C-m>', function()
-        return vim.fn['codeium#Accept']()
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-;>', function()
-        return vim.fn['codeium#CycleCompletions'](1)
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-,>', function()
-        return vim.fn['codeium#CycleCompletions'](-1)
-      end, { expr = true, silent = true })
-      vim.keymap.set('i', '<c-x>', function()
-        return vim.fn['codeium#Clear']()
-      end, { expr = true, silent = true })
+      require('codeium').setup {}
     end,
   },
   {
